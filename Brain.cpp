@@ -1,4 +1,4 @@
-#include "Arduino.h"
+#include <Arduino.h>
 #include "Brain.h"
 
 Brain::Brain(Stream &_brainStream) {
@@ -14,8 +14,8 @@ void Brain::init() {
     // Usually Serial.begin(9600);
     freshPacket = false;
     inPacket = false;
-    packetIndex = 0;
-    packetLength = 0;
+    inPacketByteIndex = 0;
+    packetPayloadLength = 0;
     eegPowerLength = 0;
     hasPower = false;
     checksum = 0;
@@ -25,41 +25,46 @@ void Brain::init() {
     attention = 0;
     meditation = 0;
 
+    successPacketCount = 0;
+    errorPacketCount = 0;
+
     clearEegPower();
 }
 
 boolean Brain::update() {
+    //available() gets the number of bytes available in the stream. This is only for bytes that have already arrived.
     if (brainStream->available()) {
+        //read() reads characters from an incoming stream to the buffer.
+        // returns the first byte of incoming data available (or -1 if no data is available, but this won't happen since we ensured at least one byte is available.)
         latestByte = brainStream->read();
-
-        // Build a packet if we know we're and not just listening for sync bytes.
+        //If we are currently in the middle of a packet.
         if (inPacket) {
         
             // First byte after the sync bytes is the length of the upcoming packet.
-            if (packetIndex == 0) {
-                packetLength = latestByte;
+            if (inPacketByteIndex == 0)
+                packetPayloadLength = latestByte;
 
                 // Catch error if packet is too long
-                if (packetLength > MAX_PACKET_LENGTH) {
+                if (packetPayloadLength > MAX_PACKET_LENGTH) {
                     // Packet exceeded max length
                     // Send an error
-                    sprintf(latestError, "ERROR: Packet too long %i", packetLength);
+                    sprintf(latestError, "ERROR: Packet too long %i", packetPayloadLength);
                     inPacket = false;
                 }
             }
-            else if (packetIndex <= packetLength) {
+            else if (inPacketByteIndex <= packetPayloadLength) {
                 // Run of the mill data bytes.
                 
                 // Print them here
 
                 // Store the byte in an array for parsing later.
-                packetData[packetIndex - 1] = latestByte;
+                packetData[inPacketByteIndex - 1] = latestByte;
 
                 // Keep building the checksum.
                 checksumAccumulator += latestByte;
             }
-            else if (packetIndex > packetLength) {
-                // We're at the end of the data payload.
+            else if (inPacketByteIndex > packetPayloadLength) {
+                // We're at the end of the data payload, meaning the latestByte is the payload checksum
                 
                 // Check the checksum.
                 checksum = latestByte;
@@ -67,21 +72,26 @@ boolean Brain::update() {
 
                 // Do they match?
                 if (checksum == checksumAccumulator) {
+                    //if the checksum is valid, parse the packet.
                     boolean parseSuccess = parsePacket();
-                    
+
+                    //If parseSuccess then we have a new valid packet
                     if (parseSuccess) {
                         freshPacket = true;
+                        successPacketCount++;
                     }
                     else {
                         // Parsing failed, send an error.
                         sprintf(latestError, "ERROR: Could not parse");
                         // good place to print the packet if debugging
+                        errorPacketCount++;
                     }
                 }
                 else {
                     // Checksum mismatch, send an error.
                     sprintf(latestError, "ERROR: Checksum");
                     // good place to print the packet if debugging
+                    errorPacketCount++;
                 }
                 // End of packet
                 
@@ -89,21 +99,23 @@ boolean Brain::update() {
                 inPacket = false;
             }
             
-            packetIndex++;
-        }
-        
-        // Look for the start of the packet
-        if ((latestByte == 170) && (lastByte == 170) && !inPacket) {
-            // Start of packet
-            inPacket = true;
-            packetIndex = 0;
-            checksumAccumulator = 0;
-        }
-        
-        // Keep track of the last byte so we can find the sync byte pairs.
+            inPacketByteIndex++;
+
+        // Keep track of the last byte so we can find the sync byte pairs that signal the start of a packet.
         lastByte = latestByte;
     }
-    
+    else {
+        // Look for the start of the packet by checking for the two sync bytes (decimal 170)
+        // Ensure that we are not currently inPacket (because two consecutive sync bytes could appear within a packet.
+        if ((latestByte == 170) && (lastByte == 170)) {
+            // Start of packet
+            inPacket = true;
+            inPacketByteIndex = 0;
+            checksumAccumulator = 0;
+        }
+    }
+
+    //update() has been called before a new packet from TGAM is available.
     if (freshPacket) {
         freshPacket = false;
         return true;
@@ -113,6 +125,8 @@ boolean Brain::update() {
     }
     
 }
+
+
 
 void Brain::clearPacket() {
     for (uint8_t i = 0; i < MAX_PACKET_LENGTH; i++) {
@@ -137,7 +151,7 @@ boolean Brain::parsePacket() {
 	
     clearEegPower();    // clear the eeg power to make sure we're honest about missing values
     
-    for (uint8_t i = 0; i < packetLength; i++) {
+    for (uint8_t i = 0; i < packetPayloadLength; i++) {
         switch (packetData[i]) {
             case 0x2:
                 signalQuality = packetData[++i];
@@ -165,7 +179,7 @@ boolean Brain::parsePacket() {
                 break;
             case 0x80:
                 // We dont' use this value so let's skip it and just increment i
-                // uint8_t packetLength = packetData[++i];
+                // uint8_t packetPayloadLength = packetData[++i];
                 i++;
                 rawValue = ((int)packetData[++i] << 8) | packetData[++i];
                 break;

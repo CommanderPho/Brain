@@ -1,10 +1,8 @@
 #ifndef Brain_h
 #define Brain_h
 
-#include "Arduino.h"
-
-#define MAX_PACKET_LENGTH 32
-#define EEG_POWER_BANDS 8
+#include <Arduino.h>
+#include "ThinkGearPacketProtocol.h"
 
 class Brain {
     public:
@@ -35,21 +33,27 @@ class Brain {
         uint32_t readMidGamma();
         
     private:
-        Stream* brainStream;        
+        Stream* brainStream;        //byte stream of incoming characters
         uint8_t packetData[MAX_PACKET_LENGTH];
         boolean inPacket;
         uint8_t latestByte;
         uint8_t lastByte;
-        uint8_t packetIndex;
-        uint8_t packetLength;
+
+        //Counts of the current successfully read/error packets.
+        uint32_t successPacketCount;
+        uint32_t errorPacketCount;
+
+
+        uint8_t inPacketByteIndex; //index into the current inPacket
+        uint8_t packetPayloadLength;
         uint8_t checksum;
         uint8_t checksumAccumulator;
         uint8_t eegPowerLength;
-        boolean hasPower;
+        boolean hasPower; //is the power-spectrum non-zero?
+
         void clearPacket();
         void clearEegPower();
         boolean parsePacket();
-        
         void printPacket();
         void init();
         void printCSV(); // maybe should be public?      
