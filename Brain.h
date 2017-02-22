@@ -1,8 +1,9 @@
 #ifndef Brain_h
 #define Brain_h
 
-#include <Arduino.h>
+#include "Arduino.h"
 #include "ThinkGearPacketProtocol.h"
+#include "ThinkGearPacket.h"
 
 class Brain {
     public:
@@ -17,6 +18,9 @@ class Brain {
         // Returns comme-delimited string of all available brain data.
         // Sequence is as below.
         char* readCSV();
+
+        //reads the current complete packet
+        //ThinkGearPacket readPacket();
 
         // Individual pieces of brain data.
         uint8_t readSignalQuality();
@@ -42,7 +46,7 @@ class Brain {
         //Counts of the current successfully read/error packets.
         uint32_t successPacketCount;
         uint32_t errorPacketCount;
-
+        uint32_t currentPacketIndex;
 
         uint8_t inPacketByteIndex; //index into the current inPacket
         uint8_t packetPayloadLength;

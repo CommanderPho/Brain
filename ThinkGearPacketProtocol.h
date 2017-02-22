@@ -9,8 +9,8 @@
 //TODO: Investigate why they chose 32 for this length....
 //#define MAX_PACKET_LENGTH 32
 
-
 #define EEG_POWER_BANDS 8
+
 
 //Corresponding to an empty data payload.
 #define MIN_PACKET_LENGTH 4
