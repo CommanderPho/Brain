@@ -25,6 +25,7 @@ void Brain::init() {
     attention = 0;
     meditation = 0;
 
+    currentPacketIndex = 0;
     successPacketCount = 0;
     errorPacketCount = 0;
 
@@ -222,40 +223,62 @@ char* Brain::readErrors() {
     return latestError;
 }
 
+//ThinkGearPacket Brain::readPacket() {
+//    //Get current packet count
+//    uint32_t currentPacketCount = successPacketCount + errorPacketCount;
+//
+//    //Create new packet
+//    ThinkGearPacket currPacket = ThinkGearPacket(currentPacketIndex);
+//
+//    boolean setupSuccess = currPacket.setup(currentPacketIndex,signalQuality,attention,meditation,eegPower);
+//    if(setupSuccess) {
+//        //success!
+//    }
+//    else {
+//        sprintf(latestError, "ERROR: Failed to parse to packet!");
+//    }
+//
+//    //Increment the next packet index
+//    currentPacketIndex++;
+//
+//    return currPacket;
+//}
+
+//todo: convert to use the readPacket
 char* Brain::readCSV() {
     // spit out a big string?
-    // find out how big this really needs to be 
+    // find out how big this really needs to be
     // should be popped off the stack once it goes out of scope?
     // make the character array as small as possible
-    
+
     if(hasPower) {
-        
         sprintf(csvBuffer,"%d,%d,%d,%lu,%lu,%lu,%lu,%lu,%lu,%lu,%lu",
-            signalQuality,
-            attention,
-            meditation,
-            eegPower[0],
-            eegPower[1],
-            eegPower[2],
-            eegPower[3],
-            eegPower[4],
-            eegPower[5],
-            eegPower[6],
-            eegPower[7]
+                signalQuality,
+                attention,
+                meditation,
+                eegPower[0],
+                eegPower[1],
+                eegPower[2],
+                eegPower[3],
+                eegPower[4],
+                eegPower[5],
+                eegPower[6],
+                eegPower[7]
         );
-        
+
         return csvBuffer;
     }
     else {
         sprintf(csvBuffer,"%d,%d,%d",
-            signalQuality,
-            attention,
-            meditation
+                signalQuality,
+                attention,
+                meditation
         );
-        
+
         return csvBuffer;
     }
 }
+
 
 // For debugging, print the entire contents of the packet data array.
 void Brain::printPacket() {

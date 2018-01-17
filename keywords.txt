@@ -1,6 +1,8 @@
 Brain	KEYWORD1
+ThinkGearPacket KEYWORD1
 readErrors	KEYWORD2
 readCSV	KEYWORD2
+readPacket KEYWORD2
 update	KEYWORD2
 readSignalQuality	KEYWORD2
 readAttention	KEYWORD2
