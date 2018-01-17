@@ -1,0 +1,8 @@
+//
+// Created by Pho Hale on 2/21/17.
+//
+
+#ifndef PHOBRAIN_THINKGEARPACKET_H
+#define PHOBRAIN_THINKGEARPACKET_H
+
+#endif //PHOBRAIN_THINKGEARPACKET_H
