@@ -1,13 +1,13 @@
-// Arduino Brain Library - Brain Serial Test
+// Arduino PhoBrain Library - PhoBrain Serial Test
 
 // Description: Grabs brain data from the serial RX pin and sends CSV out over the TX pin (Half duplex.)
 // More info: https://github.com/kitschpatrol/Arduino-Brain-Library
 // Author: Eric Mika, 2010 revised in 2014
 
-#include <Brain.h>
+#include <PhoBrain.h>
 
 // Set up the brain parser, pass it the hardware serial object you want to listen on.
-Brain brain(Serial);
+PhoBrain brain(Serial);
 
 void setup() {
     // Start the hardware serial.

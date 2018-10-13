@@ -1,17 +1,17 @@
-// Arduino Brain Library - Brain SoftSerial Test
+// Arduino PhoBrain Library - Brain SoftSerial Test
 
 // Description: Grabs brain data from software serial on pin 10 and sends CSV out over the hardware serial
 // More info: https://github.com/kitschpatrol/Arduino-Brain-Library
 // Author: Eric Mika, 2014
 
 #include <SoftwareSerial.h>
-#include <Brain.h>
+#include <PhoBrain.h>
 
 // Set up the software serial port on pins 10 (RX) and 11 (TX). We'll only actually hook up pin 10.
 SoftwareSerial softSerial(10, 11);
 
 // Set up the brain reader, pass it the software serial object you want to listen on.
-Brain brain(softSerial);
+PhoBrain brain(softSerial);
 
 void setup() {
     // Start the software serial.

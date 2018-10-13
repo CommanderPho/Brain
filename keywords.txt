@@ -1,5 +1,4 @@
-Brain	KEYWORD1
-ThinkGearPacket KEYWORD1
+PhoBrain	KEYWORD1
 readErrors	KEYWORD2
 readCSV	KEYWORD2
 readPacket KEYWORD2

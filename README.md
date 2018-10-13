@@ -1,8 +1,8 @@
-##ARDUINO BRAIN LIBRARY
+##ARDUINO PhoBrain LIBRARY
 
 ###OVERVIEW
 
-Brain is an Arduino Library for parsing data from Neurosky-based EEG headsets. Tested units include the Star Wars Force Trainer and Mattel MindFlex.
+PhoBrain is an Arduino Library for parsing data from Neurosky-based EEG headsets. Tested units include the Star Wars Force Trainer and Mattel MindFlex.
 
 It's designed to make it simple to send out an ASCII string of comma-separated values over serial, or to access processed brain wave information directly in your Arduino sketch. See the examples for code demonstrating each use case.
 

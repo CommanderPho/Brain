@@ -1,14 +1,14 @@
-// Arduino Brain Library - Brain Blinker
+// Arduino PhoBrain Library - Brain Blinker
 
 // Description: Basic brain example, blinks an LED on pin 13 faster as your "attention" value increases.
 // Adapted from the Blink without Delay example distributed with Arduino environment.
 // More info: https://github.com/kitschpatrol/Arduino-Brain-Library
 // Author: Eric Mika, 2010 revised in 2014
 
-#include <Brain.h>
+#include <PhoBrain.h>
 
 // Set up the brain reader, pass it the hardware serial object you want to listen on.
-Brain brain(Serial);
+PhoBrain brain(Serial);
 
 const int ledPin = 13; // 13 is handy because it's on the board.
 long interval = 500; // Changes based on attention value.
